@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+
+	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,4 +36,6 @@ func main() {
 	r := gin.Default()
 	r.POST("/coderunner", coderunnerProcesser)
 	r.Run(":8080")
+
+	log.Fatal(autotls.Run(r, "code.lang.pivotstudio.cn"))
 }
