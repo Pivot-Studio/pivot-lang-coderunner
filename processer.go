@@ -2,11 +2,18 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func coderunnerProcesser(c *gin.Context) {
+	defer func() {
+		semaphore <- struct{}{} // 处理完毕后释放信号量
+	}()
+
+	<-semaphore
+
 	var req struct {
 		Code string `json:"code"`
 	}
@@ -15,10 +22,17 @@ func coderunnerProcesser(c *gin.Context) {
 		return
 	}
 
+	containerIndex = containerIndex % containerNum
+	containerIndex++
+
+	//containername是default和index粘起来
+	containerName = defaultContainerName + strconv.Itoa(containerIndex)
+	createContainerAndFiles()
+	fmt.Println(containerName)
+
 	fmt.Println(req.Code)
-	Response, Find := findCache(req.Code)
-	if Find {
-		//fmt.Println("i have found cache!")
+	Response, Found := findCache(req.Code)
+	if Found {
 		c.JSON(200, Response)
 	} else {
 		var err error
@@ -31,5 +45,4 @@ func coderunnerProcesser(c *gin.Context) {
 		}
 		c.JSON(200, Response)
 	}
-
 }
