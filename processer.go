@@ -8,6 +8,7 @@ import (
 )
 
 func coderunnerProcesser(c *gin.Context) {
+
 	defer func() {
 		semaphore <- struct{}{} // 处理完毕后释放信号量
 	}()
@@ -21,8 +22,6 @@ func coderunnerProcesser(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "无法解析 JSON 数据"})
 		return
 	}
-
-
 
 	containerIndex = containerIndex % containerNum
 	containerIndex++

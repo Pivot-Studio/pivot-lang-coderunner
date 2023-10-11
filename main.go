@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"time"
+
 	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
 )
@@ -23,6 +25,9 @@ var (
 	semaphore      = make(chan struct{}, containerNum) // 信号量，控制同时处理的请求数量
 	containerIndex = 0
 	containerName  = ""
+	imageName      = "registry.cn-hangzhou.aliyuncs.com/pivot_studio/pivot_lang"
+	imageTag       = "latest"
+	updateInterval = 7 * 24 * time.Hour
 )
 
 func init() {
@@ -33,6 +38,8 @@ func init() {
 }
 
 func main() {
+	go updateDockerImage(imageName, imageTag, updateInterval) // 启动 Docker 镜像更新任务
+
 	r := gin.Default()
 	r.POST("/coderunner", coderunnerProcesser)
 	r.Run(":8080")

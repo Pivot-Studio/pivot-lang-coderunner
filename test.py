@@ -4,7 +4,7 @@ import json
 url = "http://localhost:8080/coderunner"
 code = """use std::io;
 pub fn main() i64 {
-    io::print_s("Hello, world!\\n");
+    io::print_s("Hello, world!");
     return 0;
 }"""
 

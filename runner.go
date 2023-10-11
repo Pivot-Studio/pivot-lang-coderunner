@@ -46,9 +46,10 @@ func coderunner(code string) (Response, error) {
 
 	var compileoutBytes bytes.Buffer
 	cmd := exec.Command("docker", "exec", containerName, "plc", "code/main.pi")
-	cmd.Stdout = &compileoutBytes
+	cmd.Stderr = &compileoutBytes
 	err := cmd.Run()
 	Response.CompileOutput = compileoutBytes.String()
+	fmt.Println(cmd.Stderr)
 	if err != nil {
 		fmt.Println(err)
 		return Response, err
