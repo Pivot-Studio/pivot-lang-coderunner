@@ -21,6 +21,8 @@ func createContainerAndFiles() {
 	stdout, _, err := runDockerCommand("ps", "-a", "--filter", "name="+containerName)
 	if err != nil || strings.Contains(stdout, containerName) {
 		runDockerCommand("start", containerName)
+		//加一个资源限制
+		runDockerCommand("update", "--cpus", "0.5", "--memory", "512m", containerName)
 		return
 	}
 
