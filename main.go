@@ -22,7 +22,6 @@ type Response struct {
 }
 
 var (
-	semaphore      = make(chan struct{}, containerNum) // 信号量，控制同时处理的请求数量
 	containerIndex = 0
 	containerName  = ""
 	imageName      = "registry.cn-hangzhou.aliyuncs.com/pivot_studio/pivot_lang"
@@ -32,9 +31,6 @@ var (
 
 func init() {
 	createCache()
-	for i := 0; i < containerNum; i++ {
-		semaphore <- struct{}{}
-	}
 }
 
 func main() {

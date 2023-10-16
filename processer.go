@@ -2,48 +2,45 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 func coderunnerProcesser(c *gin.Context) {
-
-	defer func() {
-		semaphore <- struct{}{} // 处理完毕后释放信号量
-	}()
-
-	<-semaphore
-
 	var req struct {
 		Code string `json:"code"`
 	}
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": "无法解析 JSON 数据"})
 		return
 	}
 
-	containerIndex = containerIndex % containerNum
-	containerIndex++
-
-	//containername是default和index粘起来
-	containerName = defaultContainerName + strconv.Itoa(containerIndex)
-	createContainerAndFiles()
-	fmt.Println(containerName)
-
-	fmt.Println(req.Code)
-	Response, Found := findCache(req.Code)
-	if Found {
-		c.JSON(200, Response)
-	} else {
-		var err error
-		Response, err = coderunner(req.Code)
-		insertCache(req.Code, Response)
-		if err != nil {
-			Response.Status = 500
-		} else {
-			Response.Status = 200
+	// 使用通道来并发处理请求
+	responseChan := make(chan Response, containerNum)
+	go func() {
+		response, found := findCache(req.Code)
+		if found {
+			responseChan <- response
+			return
 		}
-		c.JSON(200, Response)
-	}
+		containerIndex = containerIndex % containerNum
+		containerIndex++
+		//containername是default和index粘起来
+		containerName = defaultContainerName + strconv.Itoa(containerIndex)
+		createContainerAndFiles(containerName)
+		fmt.Println(containerName)
+		var err error
+		response, err = coderunner(req.Code, containerName)
+		insertCache(req.Code, response)
+		if err != nil {
+			response.Status = 500
+		} else {
+			response.Status = 200
+		}
+		responseChan <- response
+	}()
+
+	response := <-responseChan
+	c.JSON(200, response)
 }
