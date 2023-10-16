@@ -21,11 +21,9 @@ func updateDockerImage(imageName, imageTag string, updateInterval time.Duration)
 	ctx := context.Background()
 
 	// 设置定时器，定期执行操作
-	ticker := time.NewTicker(updateInterval)
-	fmt.Printf("Docker image %s:%s will be updated every %s\n", imageName, imageTag, updateInterval)
-	for {
-		select {
-		case <-ticker.C:
+		ticker := time.NewTicker(updateInterval)
+		fmt.Printf("Docker image %s:%s will be updated every %s\n", imageName, imageTag, updateInterval)
+		for range ticker.C {
 			log.Printf("Updating Docker image %s:%s...\n", imageName, imageTag)
 			fmt.Println("Updating Docker image...")
 			// 拉取最新的 Docker 镜像，强制重新拉取
@@ -37,5 +35,5 @@ func updateDockerImage(imageName, imageTag string, updateInterval time.Duration)
 			log.Printf("Docker image %s:%s updated successfully!\n", imageName, imageTag)
 			fmt.Println("Docker image updated successfully!")
 		}
+		return nil
 	}
-}

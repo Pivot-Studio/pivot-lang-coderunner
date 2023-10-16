@@ -10,15 +10,16 @@ async def send_request(session, url, data):
 async def main():
     url = "http://localhost:8080/coderunner"
     code = """use std::io;
-pub fn main() i64 {
-    io::print_s("Hello, world!\\n");
+fn main() i64 {
+    println!("hello world 114514!");
+    println!("hello world 1919810!");
     return 0;
 }"""
     data = {"code": code}
     headers = {"Content-Type": "application/json"}
 
     async with aiohttp.ClientSession(headers=headers) as session:
-        tasks = [send_request(session, url, json.dumps(data)) for _ in range(11)]
+        tasks = [send_request(session, url, json.dumps(data)) for _ in range(14)]
         results = await asyncio.gather(*tasks)
 
         for result in results:

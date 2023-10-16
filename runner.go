@@ -49,9 +49,11 @@ func coderunner(code string, thisContainerName string) (Response, error) {
 	cmd.Stderr = &compileoutBytes
 	err := cmd.Run()
 	Response.CompileOutput = compileoutBytes.String()
-	fmt.Println(cmd.Stderr)
 	if err != nil {
 		fmt.Println(err)
+		//delete container
+		runDockerCommand("stop", thisContainerName)
+		runDockerCommand("rm", thisContainerName)
 		return Response, err
 	}
 
@@ -60,11 +62,10 @@ func coderunner(code string, thisContainerName string) (Response, error) {
 	cmd.Stdout = &runBytes
 	_ = cmd.Run()
 	Response.RunOutput = runBytes.String()
-	fmt.Println(Response.RunOutput)
 
-	runDockerCommand("exec", thisContainerName, "rm", "code/main.pi")
-	runDockerCommand("exec", thisContainerName, "touch", "code/main.pi")
-	runDockerCommand("exec", thisContainerName, "rm", "./out")
+	//delete container
+	runDockerCommand("stop", thisContainerName)
+	runDockerCommand("rm", thisContainerName)
 
 	return Response, nil
 }

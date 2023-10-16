@@ -22,8 +22,7 @@ type Response struct {
 }
 
 var (
-	containerIndex = 0
-	containerName  = ""
+	containerIndex = uint64(0)
 	imageName      = "registry.cn-hangzhou.aliyuncs.com/pivot_studio/pivot_lang"
 	imageTag       = "latest"
 	updateInterval = 7 * 24 * time.Hour

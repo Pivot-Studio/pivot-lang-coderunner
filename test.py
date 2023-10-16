@@ -3,8 +3,8 @@ import json
 
 url = "http://localhost:8080/coderunner"
 code = """use std::io;
-pub fn main() i64 {
-    io::print_s("Hello, world!");
+fn main() i64 {
+    println!("hello world!");
     return 0;
 }"""
 
