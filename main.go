@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strconv"
 
 	"time"
 
@@ -30,6 +31,10 @@ var (
 
 func init() {
 	createCache()
+	for i := 1; i <= containerNum; i++ {
+		thisContainerName := defaultContainerName + strconv.Itoa(i)
+		createContainerAndFiles(thisContainerName)
+	}
 }
 
 func main() {

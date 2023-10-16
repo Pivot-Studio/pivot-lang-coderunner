@@ -19,7 +19,7 @@ fn main() i64 {
     headers = {"Content-Type": "application/json"}
 
     async with aiohttp.ClientSession(headers=headers) as session:
-        tasks = [send_request(session, url, json.dumps(data)) for _ in range(14)]
+        tasks = [send_request(session, url, json.dumps(data)) for _ in range(114)]
         results = await asyncio.gather(*tasks)
 
         for result in results:
