@@ -44,7 +44,7 @@ func coderunnerProcesser(c *gin.Context) {
 		thisContainerIndex %= containerNum
 		// containerName 是 default 和 index 粘起来
 		containerName := defaultContainerName + fmt.Sprint(thisContainerIndex)
-		fmt.Println("containerName:", containerName)
+		//fmt.Println("containerName:", containerName)
 
 		var err error
 		response, err = coderunner(req.Code, containerName)
