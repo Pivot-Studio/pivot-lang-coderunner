@@ -40,4 +40,6 @@ func main() {
 	r.Run(":8080")
 
 	log.Fatal(autotls.Run(r, "code.lang.pivotstudio.cn"))
+
+	defer deleteAllContainers()
 }
