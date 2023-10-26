@@ -41,10 +41,11 @@ func coderunnerProcesser(c *gin.Context) {
 
 		// 获取唯一的 goroutine ID 作为索引
 		thisContainerIndex := atomic.AddUint64(&containerIndex, 1)
+		thisContainerIndex %= containerNum
 		// containerName 是 default 和 index 粘起来
 		containerName := defaultContainerName + fmt.Sprint(thisContainerIndex)
 		fmt.Println("containerName:", containerName)
-		createContainerAndFiles(containerName)
+
 		var err error
 		response, err = coderunner(req.Code, containerName)
 		insertCache(req.Code, response)
