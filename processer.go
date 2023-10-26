@@ -45,15 +45,15 @@ func coderunnerProcesser(c *gin.Context) {
 		// containerName 是 default 和 index 粘起来
 		containerName := defaultContainerName + fmt.Sprint(thisContainerIndex)
 		//fmt.Println("containerName:", containerName)
-
+		createContainerAndFiles(containerName)
 		var err error
 		response, err = coderunner(req.Code, containerName)
 		insertCache(req.Code, response)
 
 		if err != nil {
-			response.Status = 500
+			response.Status = 0
 		} else {
-			response.Status = 200
+			response.Status = 1
 		}
 		responseChan <- response
 	}()
