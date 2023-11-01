@@ -13,7 +13,6 @@ metadata:
     # ratelimit
     nginx.ingress.kubernetes.io/limit-connections: "60"
     nginx.ingress.kubernetes.io/limit-rps: "60"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header X-Real-IP $remote_addr;
