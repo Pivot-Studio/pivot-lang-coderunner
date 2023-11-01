@@ -49,12 +49,13 @@ func coderunnerProcesser(c *gin.Context) {
 		var err error
 
 		response, err = coderunner(req.Code, dirname)
-		insertCache(req.Code, response)
 
 		if err != nil {
-			response.Status = 0
-		} else {
 			response.Status = 1
+			response.Err = err.Error()
+		} else {
+			response.Status = 0
+			insertCache(req.Code, response)
 		}
 		responseChan <- response
 	}()

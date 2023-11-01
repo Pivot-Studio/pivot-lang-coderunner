@@ -23,7 +23,7 @@ func coderunner(code string, idx string) (Response, error) {
 	runCommand("rm", "./out")
 
 	Response := Response{}
-	runCommand("sh", "-c", "echo '"+code+"' >> "+idx+"/"+"code/main.pi")
+	runCommand("sh", "-c", "echo '"+code+"' > "+idx+"/"+"code/main.pi")
 
 	var compileoutBytes bytes.Buffer
 	cmd := exec.Command("plc", idx+"/"+"code/main.pi", "-o", idx+"-out")

@@ -13,5 +13,5 @@ func createContainerAndFiles(thisContainerName string) {
 
 	configContent := `entry = "main.pi"
 project = "main"`
-	runCommand("sh", "-c", "echo '"+configContent+"' >> "+thisContainerName+"/"+"code/Kagari.toml")
+	runCommand("sh", "-c", "echo '"+configContent+"' > "+thisContainerName+"/"+"code/Kagari.toml")
 }

@@ -33,6 +33,7 @@ type Response struct {
 	Status        int    `json:"status"`
 	CompileOutput string `json:"compileOutput"`
 	RunOutput     string `json:"runOutput"`
+	Err           string `json:"err"`
 }
 
 var (
