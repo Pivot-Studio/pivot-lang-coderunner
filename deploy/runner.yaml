@@ -1,0 +1,94 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: runner
+  namespace: lang
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    # 开启use-regex，启用path的正则匹配 
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # ratelimit
+    nginx.ingress.kubernetes.io/limit-connections: "60"
+    nginx.ingress.kubernetes.io/limit-rps: "60"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto https;
+      proxy_ssl_server_name on;
+      proxy_ssl_name $host;
+spec:
+  rules:
+    - host: code.lang.pivotstudio.cn
+      http:
+        paths:
+          - backend:
+              service:
+                name: runner
+                port:
+                  number: 8080
+            path: /
+            pathType: Prefix
+  tls:
+  - secretName: runner-tls-cert
+    hosts:
+      - code.lang.pivotstudio.cn
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: runner
+  name: runner
+  namespace: lang
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: runner-backend
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: runner-backend
+  name: runner-backend
+  namespace: lang
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runner-backend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: runner-backend
+    spec:
+      # imagePullSecrets:
+      #   - name: harbor-config
+      # priorityClassName: high-priority
+      containers:
+        - image: harbor.pivotstudio.cn/pivot-lang/runner:{{.build_tag}}  # build_tag不是变量，不需要改
+          name: runner-backend
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: 1000m # 可自定义
+              memory: 300Mi # 可自定义
+            requests:
+              cpu: 100m # 可自定义
+              memory: 100Mi # 可自定义
+      restartPolicy: Always
+status: {}

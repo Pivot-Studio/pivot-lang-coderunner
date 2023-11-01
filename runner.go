@@ -6,47 +6,40 @@ import (
 	"os/exec"
 )
 
-func runDockerCommand(args ...string) (string, string, error) {
+func runCommand(command string, args ...string) (string, string, error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
-	cmd := exec.Command("docker", args...)
+	cmd := exec.Command(command, args...)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	return stdout.String(), stderr.String(), err
 }
 
-func coderunner(code string, thisContainerName string) (Response, error) {
+func coderunner(code string, idx string) (Response, error) {
 
-	runDockerCommand("exec", thisContainerName, "rm", "code/main.pi")
-	runDockerCommand("exec", thisContainerName, "touch", "code/main.pi")
-	runDockerCommand("exec", thisContainerName, "rm", "./out")
+	runCommand("rm", idx+"/"+"code/main.pi")
+	runCommand("touch", idx+"/"+"code/main.pi")
+	runCommand("rm", "./out")
 
 	Response := Response{}
-	runDockerCommand("exec", thisContainerName, "sh", "-c", "echo '"+code+"' >> code/main.pi")
+	runCommand("sh", "-c", "echo '"+code+"' >> "+idx+"/"+"code/main.pi")
 
 	var compileoutBytes bytes.Buffer
-	cmd := exec.Command("docker", "exec", thisContainerName, "plc", "code/main.pi")
+	cmd := exec.Command("plc", idx+"/"+"code/main.pi", "-o", idx+"-out")
 	cmd.Stderr = &compileoutBytes
 	err := cmd.Run()
 	Response.CompileOutput = compileoutBytes.String()
 	if err != nil {
 		fmt.Println(err)
-		//delete container
-		runDockerCommand("stop", thisContainerName)
-		runDockerCommand("rm", thisContainerName)
 		return Response, err
 	}
 
 	var runBytes bytes.Buffer
-	cmd = exec.Command("docker", "exec", thisContainerName, "./out")
+	cmd = exec.Command("./" + idx + "-out")
 	cmd.Stdout = &runBytes
 	_ = cmd.Run()
 	Response.RunOutput = runBytes.String()
-
-	//delete container
-	runDockerCommand("stop", thisContainerName)
-	runDockerCommand("rm", thisContainerName)
 
 	return Response, nil
 }

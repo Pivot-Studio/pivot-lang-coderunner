@@ -24,7 +24,7 @@ func coderunnerProcesser(c *gin.Context) {
 
 	// 尝试获取信号量，如果容器数量超出限制，会阻塞直到有空闲容器
 	if err := containerSemaphore.Acquire(c.Request.Context(), 1); err != nil {
-		c.JSON(429, gin.H{"error": "容器数量超出限制"})
+		c.JSON(500, gin.H{"error": "Internal error"})
 		return
 	}
 
@@ -43,11 +43,12 @@ func coderunnerProcesser(c *gin.Context) {
 		thisContainerIndex := atomic.AddUint64(&containerIndex, 1)
 		thisContainerIndex %= containerNum
 		// containerName 是 default 和 index 粘起来
-		containerName := defaultContainerName + fmt.Sprint(thisContainerIndex)
+		dirname := fmt.Sprint(thisContainerIndex)
 		//fmt.Println("containerName:", containerName)
-		createContainerAndFiles(containerName)
+		createContainerAndFiles(dirname)
 		var err error
-		response, err = coderunner(req.Code, containerName)
+
+		response, err = coderunner(req.Code, dirname)
 		insertCache(req.Code, response)
 
 		if err != nil {

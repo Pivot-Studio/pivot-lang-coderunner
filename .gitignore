@@ -21,3 +21,8 @@ coderunner
 
 # Go workspace file
 go.work
+
+target/**
+
+test*
+
