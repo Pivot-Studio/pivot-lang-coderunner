@@ -31,7 +31,7 @@ steps:
     depends_on:
       - "docker"
     settings:
-      yaml: deploy/hustcats-backend.yaml
+      yaml: deploy/runner.yaml
       build_tag: build-${DRONE_BUILD_NUMBER}
       kubeconfig:
         from_secret: kube_config
