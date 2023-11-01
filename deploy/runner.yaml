@@ -75,8 +75,8 @@ spec:
       labels:
         app: runner-backend
     spec:
-      # imagePullSecrets:
-      #   - name: harbor-config
+      imagePullSecrets:
+        - name: harbor-config
       # priorityClassName: high-priority
       containers:
         - image: harbor.pivotstudio.cn/pivot-lang/runner:{{.build_tag}}  # build_tag不是变量，不需要改
