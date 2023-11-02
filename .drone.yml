@@ -24,6 +24,7 @@ steps:
         - main
       event:
         - push
+        - custom
 
   - name: k8s cd
     image: harbor.pivotstudio.cn/common/dron8s:latest
@@ -40,3 +41,4 @@ steps:
         - main
       event:
         - push
+        - custom
